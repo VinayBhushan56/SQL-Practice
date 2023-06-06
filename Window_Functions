@@ -40,7 +40,7 @@ select * from orders;
 select o.*, c.* from orders o inner join customers c 
 on o.cust_id = c.id where o.amount>400;
 
-
+=================================================================================
 #Window Functions
 --Window Functions
 
@@ -103,7 +103,7 @@ select *,
 from amazon_sales_data;
 where sales_data <'2022-08-25';
 
-
+==============================================================================================
 
 -- Rank(), Row_Number(), Dense_Rank() window functions
 
@@ -175,7 +175,7 @@ where tmp.dense_rank_num < 3;
 select *,
     DENSE_RANK() over(partition by dept_name order by salary desc) as 'dense_rank_num'
 from employees;
-
+=======================================================================================
 --LAG(), LEAD() functions
 
 create table daily_sales
@@ -216,4 +216,48 @@ from daily_sales
 --Lead FUNCTION
 select *,
     lead(sales_amount,1,0) over(order by sales_date) as 'next_day_sales'
+from daily_sales;
+=======================================================================================
+
+--Using Frame clause - ROWS BETWEEN
+
+select * from daily_sales;
+
+--Calculate previous day, today and next day sales fro daily sales data
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN 1 PRECEDING and 1 FOLLOWING) as 'prev_and_next_day_sum'
+from daily_sales;
+
+-- Calculate Previous day and today sum
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN 1 PRECEDING and current ROW) as 'prev_and_today_sum'
+from daily_sales;
+
+--Calculate today's and 1 next day sum
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN current ROW and 1 Following) as 'today_and_nextday_sum'
+from daily_sales;
+
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN 2 PRECEDING and 1 Following) as 'prev2day_and_nextday_sum'
+from daily_sales;
+
+--Unbounded part
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN unbounded PRECEDING and current ROW) as 'unbounded_current_sum'
+from daily_sales;
+
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN  current row and unbounded Following) as 'unboundednextday_sum'
+from daily_sales;
+
+
+--Exclude current ROW
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN  current row and unbounded Following) as 'unboundednextday_sum'
+from daily_sales;
+
+--Exclude curent day sales amount
+select *,
+    sum(sales_amount) over(order by sales_date rows BETWEEN  unbounded PRECEDING and unbounded Following) - (sales_amount) as 'prev_and_nextday_sum'
 from daily_sales;
