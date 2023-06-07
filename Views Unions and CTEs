@@ -22,3 +22,15 @@ create view dept_wise_salary as select dept_name,sum(salary) as Dept_wise_salary
 
 select * from dept_wise_salary;
 drop view dept_wise_salary;
+
+
+--Recursive CTE's
+-- Query to generate 1 to 10 numbers in SQL
+
+with recursive generate_numbers AS 
+(
+select 1 as n
+union
+select n+1 from generate_numbers where n<10
+)
+select * from generate_numbers;
